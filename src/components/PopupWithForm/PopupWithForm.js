@@ -27,7 +27,10 @@ function PopupWithForm(props) {
             </fieldset>
             <button
               type="submit"
-              className="popup__submit-button"
+              className={`popup__submit-button ${
+                !props.isValid ? 'popup__submit-button_disabled' : ''
+              }`}
+              disabled={!props.isValid}
             >
               {props.isBtnLoading
                 ? props.submitBtn

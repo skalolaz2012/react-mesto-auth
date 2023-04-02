@@ -1,21 +1,28 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useFormAndValidation } from '../../hooks/useFormAndValidation'
 
 const Register = ({ onRegister }) => {
-  const [formValue, setFormValue] = useState({
-    email: '',
-    password: '',
-  })
+  const { values, handleChange, errors, isValid, setIsValid } =
+    useFormAndValidation()
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onRegister(formValue.email, formValue.password)
+    onRegister(values.email, values.password)
   }
+
+  useEffect(() => {
+    setIsValid(false)
+  }, [])
 
   return (
     <div className="auth">
       <p className="auth__welcome">Регистрация</p>
-      <form onSubmit={handleSubmit} className="auth__form" noValidate>
+      <form
+        onSubmit={handleSubmit}
+        className="auth__form"
+        noValidate
+      >
         <input
           type="email"
           name="email"
@@ -25,15 +32,18 @@ const Register = ({ onRegister }) => {
           maxLength="60"
           className="auth__input auth__input_type_email"
           id="email-input"
-          value={formValue.email}
-          onChange={(e) => {
-            const { name, value } = e.target
-            setFormValue({
-              ...formValue,
-              [name]: value,
-            })
-          }}
+          value={values.email || ''}
+          onChange={handleChange}
         />
+        <div className="popup__field">
+          <span
+            className={`email-input-error popup__error popup__error-field ${
+              isValid ? '' : 'popup__error_visible'
+            }`}
+          >
+            {errors.email}
+          </span>
+        </div>
         <input
           type="password"
           name="password"
@@ -43,17 +53,23 @@ const Register = ({ onRegister }) => {
           maxLength="40"
           className="auth__input auth__input_type_password"
           id="password-input"
-          value={formValue.password}
-          onChange={(e) => {
-            const { name, value } = e.target
-            setFormValue({
-              ...formValue,
-              [name]: value,
-            })
-          }}
+          value={values.password || ''}
+          onChange={handleChange}
         />
+        <div className="popup__field">
+          <span
+            className={`password-input-error popup__error popup__error-field ${
+              isValid ? '' : 'popup__error_visible'
+            }`}
+          >
+            {errors.password}
+          </span>
+        </div>
         <div className="auth__button-container">
-          <button type="submit" className="auth__link">
+          <button type="submit" className={`auth__link-button ${
+              !isValid ? 'auth__link-button_disabled' : ''
+            }`}
+            disabled={!isValid}>
             Зарегистрироваться
           </button>
         </div>

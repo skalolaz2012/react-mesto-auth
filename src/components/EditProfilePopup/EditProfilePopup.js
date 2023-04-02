@@ -1,20 +1,30 @@
-import { useContext, useState, useEffect } from 'react'
+import { useContext, useEffect } from 'react'
+import { useFormAndValidation } from '../../hooks/useFormAndValidation'
 import PopupWithForm from '../PopupWithForm/PopupWithForm'
 import { CurrentUserContext } from '../../contexts/CurrentUserContext'
 
 function EditProfilePopup({ isOpen, onClose, onUpdateUser, isBtnLoading }) {
-
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
+  const {
+    values,
+    handleChange,
+    errors,
+    isValid,
+    setIsValid,
+    setValues,
+    resetForm,
+  } = useFormAndValidation()
 
   const currentUser = useContext(CurrentUserContext)
 
   // После загрузки текущего пользователя из API
   // его данные будут использованы в управляемых компонентах.
   useEffect(() => {
-    if(isOpen) {
-      setName(currentUser.name)
-      setDescription(currentUser.about)
+    if (currentUser) {
+      setIsValid(true)
+      setValues(currentUser)
+    }
+    if (!isOpen) {
+      resetForm()
     }
   }, [currentUser, isOpen])
 
@@ -24,8 +34,8 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, isBtnLoading }) {
 
     // Передаём значения управляемых компонентов во внешний обработчик
     onUpdateUser({
-      name,
-      about: description,
+      name: values.name,
+      about: values.about,
     })
   }
 
@@ -39,6 +49,7 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, isBtnLoading }) {
       onSubmit={handleSubmit}
       isBtnLoading={isBtnLoading}
       submitBtn="Сохранение..."
+      isValid={isValid}
     >
       <input
         type="text"
@@ -49,11 +60,17 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, isBtnLoading }) {
         maxLength="40"
         className="popup__input popup__input_field_title"
         id="name-input"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        value={values.name || ''}
+        onChange={handleChange}
       />
       <div className="popup__field">
-        <span className="name-input-error popup__error popup__error-field"></span>
+        <span
+          className={`name-input-error popup__error popup__error-field ${
+            isValid ? '' : 'popup__error_visible'
+          }`}
+        >
+          {errors.name}
+        </span>
       </div>
       <input
         type="text"
@@ -64,11 +81,17 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, isBtnLoading }) {
         maxLength="200"
         className="popup__input popup__input_field_text"
         id="about-input"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        value={values.about || ''}
+        onChange={handleChange}
       />
       <div className="popup__field">
-        <span className="about-input-error popup__error popup__error-field"></span>
+        <span
+          className={`about-input-error popup__error popup__error-field ${
+            isValid ? '' : 'popup__error_visible'
+          }`}
+        >
+          {errors.about}
+        </span>
       </div>
     </PopupWithForm>
   )

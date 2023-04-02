@@ -17,7 +17,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 30px;
 }
 .auth__input {
   all: unset;
@@ -25,10 +24,13 @@
   font-size: 14px;
   line-height: 17px;
   color: #ccc;
-  padding-bottom: 13px;
+  padding-bottom: 6px;
   border-bottom: 2px solid #ccc;
 }
-.auth__link {
+.auth__input_type_password {
+  margin-top: 42px;
+}
+.auth__link-button {
   all: unset;
   color: #000;
   font-weight: 400;
@@ -41,6 +43,14 @@
   margin-top: 186px;
   width: 100%;
   text-align: center;
+}
+.auth__link-button_disabled {
+  opacity: 0.2;
+  color: #000;
+  border: 1px solid #000;
+  background: #fff;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 .auth__button-container {
   display: flex;

@@ -1,22 +1,25 @@
-import { useRef, useEffect } from 'react'
+import { useEffect } from 'react'
+import { useFormAndValidation } from '../../hooks/useFormAndValidation'
 import PopupWithForm from '../PopupWithForm/PopupWithForm'
 
 function AddPlacePopup({ isOpen, onClose, onAddPlace, isBtnLoading }) {
-  const titleRef = useRef(null)
-  const linkRef = useRef(null)
+  const { values, handleChange, errors, isValid, resetForm } =
+    useFormAndValidation()
 
   function handleAddPlace(e) {
     e.preventDefault()
-
-    onAddPlace({
-      name: titleRef.current.value,
-      link: linkRef.current.value,
-    })
+    if (isValid) {
+      onAddPlace({
+        name: values.name,
+        link: values.link,
+      })
+    }
   }
 
   useEffect(() => {
-    titleRef.current.value = ''
-    linkRef.current.value = ''
+    if (!isOpen) {
+      resetForm()
+    }
   }, [isOpen])
 
   return (
@@ -30,6 +33,7 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, isBtnLoading }) {
       type="form_card"
       isBtnLoading={isBtnLoading}
       submitBtn="Сохранение..."
+      isValid={isValid}
     >
       <input
         type="text"
@@ -40,10 +44,11 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, isBtnLoading }) {
         maxLength="30"
         className="popup__input popup__input_field_description"
         id="card-input"
-        ref={titleRef}
+        onChange={handleChange}
+        value={values.name || ""}
       />
       <div className="popup__field">
-        <span className="card-input-error popup__error popup__error-field"></span>
+      <span className={`url-input-error popup__error popup__error-field ${isValid ? "" : "popup__error_visible"}`}>{errors.name}</span>
       </div>
       <input
         type="url"
@@ -52,10 +57,11 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, isBtnLoading }) {
         required
         className="popup__input popup__input_field_image"
         id="url-input"
-        ref={linkRef}
+        onChange={handleChange}
+        value={values.link || ""}
       />
       <div className="popup__field">
-        <span className="url-input-error popup__error popup__error-field"></span>
+        <span className={`url-input-error popup__error popup__error-field ${isValid ? "" : "popup__error_visible"}`}>{errors.link}</span>
       </div>
     </PopupWithForm>
   )

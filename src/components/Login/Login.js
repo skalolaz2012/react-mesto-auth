@@ -1,20 +1,27 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { useFormAndValidation } from '../../hooks/useFormAndValidation'
 
 const Login = ({ onLogin }) => {
-  const [formValue, setFormValue] = useState({
-    email: '',
-    password: '',
-  })
+  const { values, handleChange, errors, isValid, setIsValid } =
+    useFormAndValidation()
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onLogin(formValue.email, formValue.password)
+    onLogin(values.email, values.password)
   }
+
+  useEffect(() => {
+    setIsValid(false)
+  }, [])
 
   return (
     <div className="auth">
       <h3 className="auth__welcome">Вход</h3>
-      <form onSubmit={handleSubmit} className="auth__form" noValidate>
+      <form
+        onSubmit={handleSubmit}
+        className="auth__form"
+        noValidate
+      >
         <input
           type="email"
           name="email"
@@ -24,15 +31,18 @@ const Login = ({ onLogin }) => {
           maxLength="60"
           className="auth__input auth__input_type_email"
           id="email-input"
-          value={formValue.email}
-          onChange={(e) => {
-            const { name, value } = e.target
-            setFormValue({
-              ...formValue,
-              [name]: value,
-            })
-          }}
+          value={values.email || ''}
+          onChange={handleChange}
         />
+        <div className="popup__field">
+          <span
+            className={`email-input-error popup__error popup__error-field ${
+              isValid ? '' : 'popup__error_visible'
+            }`}
+          >
+            {errors.email}
+          </span>
+        </div>
         <input
           type="password"
           name="password"
@@ -42,22 +52,30 @@ const Login = ({ onLogin }) => {
           maxLength="40"
           className="auth__input auth__input_type_password"
           id="password-input"
-          value={formValue.password}
-          onChange={(e) => {
-            const { name, value } = e.target
-            setFormValue({
-              ...formValue,
-              [name]: value,
-            })
-          }}
+          value={values.password || ''}
+          onChange={handleChange}
         />
+        <div className="popup__field">
+          <span
+            className={`password-input-error popup__error popup__error-field ${
+              isValid ? '' : 'popup__error_visible'
+            }`}
+          >
+            {errors.password}
+          </span>
+        </div>
         <div className="auth__button-container">
-          <button type="submit" className="auth__link">
+          <button
+            type="submit"
+            className={`auth__link-button ${
+              !isValid ? 'auth__link-button_disabled' : ''
+            }`}
+            disabled={!isValid}
+          >
             Войти
           </button>
         </div>
       </form>
-      
     </div>
   )
 }
